@@ -1,26 +1,36 @@
-use axum::Json;
-use chrono::{DateTime, Utc};
-use serde::{Serialize};
+use axum::{Extension, Json};
+use axum::extract::Path;
+use crate::db::DbPool;
 use crate::error::AppResult;
+use crate::models::{Todo, NewTodo};
 
-#[derive(Serialize)]
-pub struct Todo {
-    id: i32,
-    title: String,
-    description: Option<String>,
-    completed: bool,
-    created_at: DateTime<Utc>,
-    updated_at: Option<DateTime<Utc>>,
+pub async fn get_todos(
+    Extension(pool): Extension<DbPool>,
+) -> AppResult<Json<Vec<Todo>>> {
+    let todos = Todo::list(&pool).await?;
+    Ok(Json(todos))
 }
 
-pub async fn get_todos() -> AppResult<Json<Vec<Todo>>> {
-    let todos = Todo {
-        id: 1,
-        title: "Sample Todo".to_string(),
-        description: Some("This is a sample todo item.".to_string()),
-        completed: false,
-        created_at: Utc::now(),
-        updated_at: None,
-    };
-    Ok(Json(vec![todos]))
+pub async fn get_todo(
+    Extension(pool): Extension<DbPool>,
+    Path(id): Path<i32>,
+) -> AppResult<Json<Todo>> {
+    let todo = Todo::find(&pool, id).await?;
+    Ok(Json(todo))
+}
+
+pub async fn create_todo(
+    Extension(pool): Extension<DbPool>,
+    Json(new_todo): Json<NewTodo>,
+) -> AppResult<Json<Todo>> {
+    let todo = Todo::create(&pool, new_todo).await?;
+    Ok(Json(todo))
+}
+
+pub async fn delete_todo(
+    Extension(pool): Extension<DbPool>,
+    Path(id): Path<i32>,
+) -> AppResult<Json<usize>> {
+    let deleted = Todo::delete(&pool, id).await?;
+    Ok(Json(deleted))
 }

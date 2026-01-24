@@ -1,5 +1,7 @@
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
+use diesel::result::Error as DieselError;
+use diesel_async::pooled_connection::deadpool::PoolError;
 
 pub type AppResult<T> = Result<T, AppError>;
 
@@ -22,5 +24,20 @@ impl IntoResponse for AppError {
 impl From<anyhow::Error> for AppError {
     fn from(err: anyhow::Error) -> Self {
         AppError::Internal(err)
+    }
+}
+
+impl From<DieselError> for AppError {
+    fn from(err: DieselError) -> Self {
+        match err {
+            DieselError::NotFound => AppError::NotFound("Resource not found".to_string()),
+            _ => AppError::Internal(err.into()),
+        }
+    }
+}
+
+impl From<PoolError> for AppError {
+    fn from(err: PoolError) -> Self {
+        AppError::Internal(err.into())
     }
 }
