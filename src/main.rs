@@ -10,7 +10,7 @@ async fn main() -> anyhow::Result<()> {
         .with_max_level(tracing::Level::DEBUG)
         .init();
 
-    tracing::info!("🚀 Starting server":);
+    tracing::info!("🚀 Starting server");
 
     let routes = Router::new()
         .route("/api/v1/get_todos", get(api::todo::get_todos));

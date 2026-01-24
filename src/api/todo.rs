@@ -14,5 +14,13 @@ pub struct Todo {
 }
 
 pub async fn get_todos() -> AppResult<Json<Vec<Todo>>> {
-    Ok(Json(vec![]))
+    let todos = Todo {
+        id: 1,
+        title: "Sample Todo".to_string(),
+        description: Some("This is a sample todo item.".to_string()),
+        completed: false,
+        created_at: Utc::now(),
+        updated_at: None,
+    };
+    Ok(Json(vec![todos]))
 }
