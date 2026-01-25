@@ -2,7 +2,7 @@ use axum::{Extension, Json};
 use axum::extract::Path;
 use crate::db::DbPool;
 use crate::error::AppResult;
-use crate::models::{Todo, NewTodo};
+use crate::models::{Todo, NewTodo, UpdateTodo};
 
 pub async fn get_todos(
     Extension(pool): Extension<DbPool>,
@@ -34,3 +34,13 @@ pub async fn delete_todo(
     let deleted = Todo::delete(&pool, id).await?;
     Ok(Json(deleted))
 }
+
+pub async fn update_todo(
+    Extension(pool): Extension<DbPool>,
+    Path(id): Path<i32>,
+    Json(update_todo): Json<UpdateTodo>,
+) -> AppResult<Json<Todo>> {
+    let updated = Todo::update(&pool, id, update_todo).await?;
+    Ok(Json(updated))
+}
+

@@ -20,3 +20,11 @@ pub struct NewTodo {
     pub title: String,
     pub description: Option<String>,
 }
+
+#[derive(Insertable, Deserialize, AsChangeset)]
+#[diesel(table_name = todo)]
+pub struct UpdateTodo {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub completed: Option<bool>,
+}

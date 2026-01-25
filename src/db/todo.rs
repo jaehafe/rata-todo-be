@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use diesel_async::RunQueryDsl;
 use crate::db::DbPool;
 use crate::error::AppResult;
-use crate::models::{Todo, NewTodo};
+use crate::models::{Todo, NewTodo, UpdateTodo};
 use crate::schema::todo;
 
 impl Todo {
@@ -35,7 +35,7 @@ impl Todo {
         Ok(result)
     }
 
-    pub async fn update(pool: &DbPool, todo_id: i32, updated_todo: NewTodo) -> AppResult<Todo> {
+    pub async fn update(pool: &DbPool, todo_id: i32, updated_todo: UpdateTodo) -> AppResult<Todo> {
         let mut conn = pool.get().await?;
         let result = diesel::update(todo::table.find(todo_id))
             .set(&updated_todo)

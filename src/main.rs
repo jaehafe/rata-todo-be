@@ -6,7 +6,7 @@ mod schema;
 
 use std::env;
 use axum::{Extension, Router};
-use axum::routing::{get, post, delete};
+use axum::routing::{get, post, delete, put};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -25,8 +25,9 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/v1/todos", get(api::todo::get_todos))
         .route("/api/v1/todos", post(api::todo::create_todo))
         .route("/api/v1/todos/{id}", get(api::todo::get_todo))
-        .route("/api/v1/todos/{id}", delete(api::todo::delete_todo));
-
+        .route("/api/v1/todos/{id}", delete(api::todo::delete_todo))
+        .route("/api/v1/todos/{id}", put(api::todo::update_todo));
+    
     let app = Router::new()
         .merge(routes)
         .layer(Extension(pool));
