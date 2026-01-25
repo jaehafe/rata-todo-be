@@ -35,6 +35,16 @@ impl Todo {
         Ok(result)
     }
 
+    pub async fn update(pool: &DbPool, todo_id: i32, updated_todo: NewTodo) -> AppResult<Todo> {
+        let mut conn = pool.get().await?;
+        let result = diesel::update(todo::table.find(todo_id))
+            .set(&updated_todo)
+            .returning(Todo::as_returning())
+            .get_result(&mut conn)
+            .await?;
+        Ok(result)
+    }
+
     pub async fn update_completed(pool: &DbPool, todo_id: i32, completed: bool) -> AppResult<Todo> {
         let mut conn = pool.get().await?;
         let result = diesel::update(todo::table.find(todo_id))
